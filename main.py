@@ -45,12 +45,13 @@ if __name__ == '__main__':
             continue
 
         if event['type_code'] == 'rdv':
-            if event['rdv_group_registered'] is None:
+            jkey = 'rdv_indiv_registered' if event['rdv_indiv_registered'] is not None else 'rdv_group_registered'
+            if event[jkey] is None:
                 start = event['start']
                 end = event['end']
             else:
-                start = event['rdv_group_registered'].split('|')[0]
-                end = event['rdv_group_registered'].split('|')[1]
+                start = event[jkey].split('|')[0]
+                end = event[jkey].split('|')[1]
         else:
             start = event['start']
             end = event['end']
