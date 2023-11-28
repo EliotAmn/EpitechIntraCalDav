@@ -25,7 +25,7 @@ def get_planning(start, end):
 def get_next_date(current, days):
     return (current + datetime.timedelta(days=days)).strftime("%Y-%m-%d")
 
-if __name__ == '__main__':
+def run():
 
     print("Starting synchronization")
     print("Fetching planning from intra")
@@ -70,3 +70,7 @@ if __name__ == '__main__':
 
     print("Synchronizing data")
     caldav_manager.synchronize(minified)
+if __name__ == '__main__':
+    run()
+    exit (0)
+
