@@ -70,6 +70,7 @@ def run():
 
     print("Synchronizing data")
     caldav_manager.synchronize(minified)
+    print("All events synchronized !")
 if __name__ == '__main__':
     run()
     exit (0)
