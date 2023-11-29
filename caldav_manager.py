@@ -20,6 +20,7 @@ def add_event(epi_event, caldav_calendar, is_project=False):
     if is_project:
         begin = datetime.datetime.strptime(epi_event['start'], "%Y-%m-%d %H:%M:%S").strftime("%Y%m%d")
         end = datetime.datetime.strptime(epi_event['end'], "%Y-%m-%d %H:%M:%S").strftime("%Y%m%d")
+        end = (datetime.datetime.strptime(end, "%Y%m%d") + datetime.timedelta(days=1)).strftime("%Y%m%d")
     else:
         begin = datetime.datetime.strptime(epi_event['start'], "%Y-%m-%d %H:%M:%S").strftime("%Y%m%dT%H%M%S")
         end = datetime.datetime.strptime(epi_event['end'], "%Y-%m-%d %H:%M:%S").strftime("%Y%m%dT%H%M%S")
