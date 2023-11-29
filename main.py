@@ -9,6 +9,15 @@ def send_error_webhook(error):
         'content': f"```{error}```"
     })
 
+
+def get_activities(start, end):
+    res = requests.get("https://intra.epitech.eu/module/board/?format=json&start=" + start + "&end=" + end,
+                       cookies={
+                           "user": config.INTRA_TOKEN
+                       })
+    return res.json()
+
+
 def get_planning(start, end):
     r = requests.get('https://intra.epitech.eu/planning/load', params={
         'start': start,
@@ -22,16 +31,19 @@ def get_planning(start, end):
         return []
     return r.json()
 
+
 def get_next_date(current, days):
     return (current + datetime.timedelta(days=days)).strftime("%Y-%m-%d")
 
-def run():
 
+def run():
     print("Starting synchronization")
     print("Fetching planning from intra")
     planning = get_planning(config.SYNC_START, config.SYNC_END)
+    activities = get_activities(config.SYNC_START, config.SYNC_END)
 
     minified = []
+    minified_activities = []
 
     print("Formatting data")
     for event in planning:
@@ -61,18 +73,35 @@ def run():
             'id': event['codeevent'],
             'title': event['acti_title'],
             'start': start,
-            'location': event['room']['code'].split('/')[-1] if event['room'] is not None and "code" in event["room"] else "Pas de salle",
+            'location': event['room']['code'].split('/')[-1] if event['room'] is not None and "code" in event[
+                "room"] else "Pas de salle",
             'end': end,
             'type': event['type_code'],
+        })
+
+    for act in activities:
+        if not act['registered']:
+            continue
+        if not act['type_acti_code'] == 'proj':
+            continue
+
+        beg_date = act["begin_acti"]
+        end_date = act["end_acti"]
+        minified_activities.append({
+            'id': act['codeacti'],
+            'title': act['acti_title'],
+            'start': beg_date,
+            'end': end_date,
         })
 
     print("Sorting data")
     minified.sort(key=lambda x: x['start'])
 
     print("Synchronizing data")
-    caldav_manager.synchronize(minified)
+    caldav_manager.synchronize(minified, minified_activities)
     print("All events synchronized !")
+
+
 if __name__ == '__main__':
     run()
-    exit (0)
-
+    exit(0)
