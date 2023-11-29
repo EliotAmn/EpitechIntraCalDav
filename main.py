@@ -35,7 +35,7 @@ def run():
 
     print("Formatting data")
     for event in planning:
-        if event['rdv_indiv_registered'] is None and event['rdv_indiv_registered'] is None:
+        if event['rdv_indiv_registered'] is None and event['rdv_group_registered'] is None:
             if event['semester'] not in [0, 1, 2]:
                 continue
             if not event['module_registered']:
