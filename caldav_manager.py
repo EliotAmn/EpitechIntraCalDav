@@ -31,7 +31,7 @@ PRODID:-//ZContent.net//Zap Calendar 1.0//EN
 BEGIN:VEVENT
 SUMMARY:{epi_event['title']}
 UID:{epi_event['id']}
-DTSTART:{begin}
+DTSTART;TZID=Europe/Paris:{begin}
 DTEND:{end}
 DTSTAMP:{datetime.datetime.now().strftime("%Y%m%dT%H%M%S")}
 LOCATION:{epi_event['location'] if 'location' in epi_event else "Non défini"}
