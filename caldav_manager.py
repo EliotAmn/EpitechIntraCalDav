@@ -35,6 +35,11 @@ DTSTART;TZID=Europe/Paris:{begin}
 DTEND:{end}
 DTSTAMP:{datetime.datetime.now().strftime("%Y%m%dT%H%M%S")}
 LOCATION:{epi_event['location'] if 'location' in epi_event else "Non défini"}
+BEGIN:VALARM
+TRIGGER:-PT30M
+DESCRIPTION: {epi_event['title']}
+ACTION:DISPLAY
+END:VALARM
 END:VEVENT
 END:VCALENDAR
 """)
