@@ -1,11 +1,15 @@
 import datetime
 import requests
 import caldav_manager
-import config
+import os
 
+ERR_WEBHOOK_URL = os.getenv("ERR_WEBHOOK_URL", "")
+INTRA_TOKEN = os.getenv("INTRA_TOKEN", "")
+SYNC_START = os.getenv("SYNC_START", "2023-09-01")
+SYNC_END = os.getenv("SYNC_END", "2024-12-31")
 
 def send_error_webhook(error):
-    requests.post(config.ERR_WEBHOOK_URL, json={
+    requests.post(ERR_WEBHOOK_URL, json={
         'content': f"```{error}```"
     })
 
@@ -13,7 +17,7 @@ def send_error_webhook(error):
 def get_activities(start, end):
     res = requests.get("https://intra.epitech.eu/module/board/?format=json&start=" + start + "&end=" + end,
                        cookies={
-                           "user": config.INTRA_TOKEN
+                           "user": INTRA_TOKEN
                        })
     return res.json()
 
@@ -24,7 +28,7 @@ def get_planning(start, end):
         'end': end,
         'format': 'json',
     }, cookies={
-        'user': config.INTRA_TOKEN
+        'user': INTRA_TOKEN
     })
     if r.status_code != 200:
         send_error_webhook(f"Error while fetching planning: {r.status_code} {r.text}")
@@ -39,8 +43,8 @@ def get_next_date(current, days):
 def run():
     print("Starting synchronization")
     print("Fetching planning from intra")
-    planning = get_planning(config.SYNC_START, config.SYNC_END)
-    activities = get_activities(config.SYNC_START, config.SYNC_END)
+    planning = get_planning(SYNC_START, SYNC_END)
+    activities = get_activities(SYNC_START, SYNC_END)
 
     minified = []
     minified_activities = []
@@ -79,6 +83,9 @@ def run():
             'type': event['type_code'],
         })
 
+    if "message" in activities and activities['message'] == "Veuillez vous connecter":
+        send_error_webhook("Veuillez vous connecter à l'intra pour obtenir un cookie valide.")
+        return
     for act in activities:
         if not act['registered']:
             continue

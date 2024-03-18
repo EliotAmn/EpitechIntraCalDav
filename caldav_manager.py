@@ -1,11 +1,18 @@
 import caldav
 import datetime
-import config
 import main
+import os
 
+CD_URL = os.getenv("CD_URL", "https://cloud.nextcloud/remote.php/dav/")
+CD_USERNAME = os.getenv("CD_USERNAME", "cron_epitechcalendar")
+CD_PASSWORD = os.getenv("CD_PASSWORD", "")
+CD_CALENDAR_NAME = os.getenv("CD_CALENDAR_NAME", "IntraCalendar")
+CD_PROJ_CALENDAR_NAME = os.getenv("CD_PROJ_CALENDAR_NAME", "IntraProjects")
+ERR_WEBHOOK_URL = os.getenv("ERR_WEBHOOK_URL", "")
+INTRA_TOKEN = os.getenv("INTRA_TOKEN", "")
 
 def get_cd_calendar(name):
-    with caldav.DAVClient(url=config.CD_URL, username=config.CD_USERNAME, password=config.CD_PASSWORD) as client:
+    with caldav.DAVClient(url=CD_URL, username=CD_USERNAME, password=CD_PASSWORD) as client:
         my_principal = client.principal()
 
         epitech_calendar = None
@@ -47,8 +54,8 @@ END:VCALENDAR
 
 def synchronize(epi_events, epi_projects):
     try:
-        cal = get_cd_calendar(config.CD_CALENDAR_NAME)
-        cal_proj = get_cd_calendar(config.CD_PROJ_CALENDAR_NAME)
+        cal = get_cd_calendar(CD_CALENDAR_NAME)
+        cal_proj = get_cd_calendar(CD_PROJ_CALENDAR_NAME)
     except Exception as e:
         main.send_error_webhook(f"Error while getting calendar: {e}")
 
