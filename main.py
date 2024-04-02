@@ -5,8 +5,8 @@ import os
 
 ERR_WEBHOOK_URL = os.getenv("ERR_WEBHOOK_URL", "")
 INTRA_TOKEN = os.getenv("INTRA_TOKEN", "")
-SYNC_START = os.getenv("SYNC_START", "2023-09-01")
-SYNC_END = os.getenv("SYNC_END", "2024-12-31")
+SYNC_START = os.getenv("SYNC_START", "2024-01-01")
+SYNC_END = os.getenv("SYNC_END", "2025-12-31")
 
 def send_error_webhook(error):
     requests.post(ERR_WEBHOOK_URL, json={
@@ -50,7 +50,10 @@ def run():
     minified_activities = []
 
     print("Formatting data")
+    print(planning)
     for event in planning:
+        if "calendar_type" in event and event["calendar_type"] == "perso":
+            continue
         if event['rdv_indiv_registered'] is None and event['rdv_group_registered'] is None:
             if event['semester'] not in [0, 1, 2]:
                 continue
